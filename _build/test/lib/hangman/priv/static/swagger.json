@@ -1,0 +1,422 @@
+{
+  "swagger": "2.0",
+  "paths": {
+    "/manager/report/words/pdf": {
+      "get": {
+        "tags": [
+          "WordsReport"
+        ],
+        "summary": "Words' report pdf",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "required": true,
+            "name": "authorization",
+            "in": "header",
+            "description": "Token to access"
+          }
+        ],
+        "operationId": "HangmanWeb.WordsReportController.create_words_report_pdf",
+        "description": "Returns JSON with the path"
+      }
+    },
+    "/manager/report/words/guessed": {
+      "put": {
+        "tags": [
+          "WordsReport"
+        ],
+        "summary": "Update guessed word",
+        "responses": {
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/UpdateWordsGuessedError"
+            },
+            "description": "No report found"
+          },
+          "205": {
+            "schema": {
+              "$ref": "#/definitions/UpdateWordsGuessedResponse"
+            },
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "required": true,
+            "name": "authorization",
+            "in": "header",
+            "description": "Token to access"
+          },
+          {
+            "schema": {
+              "$ref": "#/definitions/UpdateWordsGuessedRequest"
+            },
+            "required": true,
+            "name": "word",
+            "in": "body",
+            "description": "The word data"
+          }
+        ],
+        "operationId": "HangmanWeb.WordsReportController.update_words_guessed",
+        "description": "Returns JSON with the report"
+      }
+    },
+    "/manager/report/words/:np/:nr?char={char}&field={field}&order={order}&max_played={max_played}&min_played={min_played}&max_guessed={max_guessed}&min_guessed={min_guessed}": {
+      "get": {
+        "tags": [
+          "WordsReport"
+        ],
+        "summary": "Words' report",
+        "responses": {
+          "204": {
+            "schema": {
+              "$ref": "#/definitions/GetWordReportResponseError"
+            },
+            "description": "No reports"
+          },
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/GetWordReportResponse"
+            },
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "required": true,
+            "name": "authorization",
+            "in": "header",
+            "description": "Token to access"
+          },
+          {
+            "type": "string",
+            "required": true,
+            "name": "np",
+            "in": "path",
+            "description": "Page number"
+          },
+          {
+            "type": "string",
+            "required": true,
+            "name": "nr",
+            "in": "path",
+            "description": "Rows number"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "char",
+            "in": "path",
+            "description": "Report to match"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "field",
+            "in": "path",
+            "description": "Field to order"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "order",
+            "in": "path",
+            "description": "Order"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "max_played",
+            "in": "path",
+            "description": "Max played"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "min_played",
+            "in": "path",
+            "description": "Min played"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "max_guessed",
+            "in": "path",
+            "description": "Max guessed"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "min_guessed",
+            "in": "path",
+            "description": "Min guessed"
+          }
+        ],
+        "operationId": "HangmanWeb.WordsReportController.get_words_report",
+        "description": "Returns JSON with the report"
+      }
+    },
+    "/manager/report/users/pdf": {
+      "get": {
+        "tags": [
+          "UsersReport"
+        ],
+        "summary": "Users' report pdf",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "required": true,
+            "name": "authorization",
+            "in": "header",
+            "description": "Token to access"
+          }
+        ],
+        "operationId": "HangmanWeb.UsersReportController.create_users_report_pdf",
+        "description": "Returns JSON with the path"
+      }
+    },
+    "/manager/report/users/:np/:nr?char={char}&field={field}&order={order}": {
+      "get": {
+        "tags": [
+          "UsersReport"
+        ],
+        "summary": "Users' report",
+        "responses": {
+          "204": {
+            "schema": {
+              "$ref": "#/definitions/GetUserReportResponseError"
+            },
+            "description": "No reports"
+          },
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/GetUserReportResponse"
+            },
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "type": "string",
+            "required": true,
+            "name": "authorization",
+            "in": "header",
+            "description": "Token to access"
+          },
+          {
+            "type": "string",
+            "required": true,
+            "name": "np",
+            "in": "path",
+            "description": "Page number"
+          },
+          {
+            "type": "string",
+            "required": true,
+            "name": "nr",
+            "in": "path",
+            "description": "Rows number"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "char",
+            "in": "path",
+            "description": "Report to match"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "field",
+            "in": "path",
+            "description": "Field to order"
+          },
+          {
+            "type": "string",
+            "required": false,
+            "name": "order",
+            "in": "path",
+            "description": "Order"
+          }
+        ],
+        "operationId": "HangmanWeb.UsersReportController.get_users_report",
+        "description": "Returns JSON with the report"
+      }
+    }
+  },
+  "info": {
+    "version": "1.0",
+    "title": "Reports API"
+  },
+  "host": "localhost:4000",
+  "definitions": {
+    "WordsReport": {
+      "type": "object",
+      "title": "Words Report",
+      "required": [
+        "user"
+      ],
+      "properties": {
+        "word": {
+          "type": "string",
+          "description": "Word"
+        },
+        "user": {
+          "type": "string",
+          "description": "User's email that create the word"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "datetime",
+          "description": "Update timestamp"
+        },
+        "played": {
+          "type": "string",
+          "description": "Times that word has been played"
+        },
+        "inserted_at": {
+          "type": "string",
+          "format": "datetime",
+          "description": "Creation timestamp"
+        },
+        "id": {
+          "type": "integer",
+          "description": "Report ID"
+        },
+        "guessed": {
+          "type": "string",
+          "description": "Times that word has been guessed"
+        }
+      },
+      "description": "Words report to handle"
+    },
+    "UsersReport": {
+      "type": "object",
+      "title": "Users Report",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "word": {
+          "type": "string",
+          "description": "Word handled"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "datetime",
+          "description": "Update timestamp"
+        },
+        "inserted_at": {
+          "type": "string",
+          "format": "datetime",
+          "description": "Creation timestamp"
+        },
+        "id": {
+          "type": "integer",
+          "description": "Report ID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email that make a change"
+        },
+        "action": {
+          "type": "string",
+          "description": "Action made"
+        }
+      },
+      "description": "Users report to handle"
+    },
+    "UpdateWordsGuessedResponse": {
+      "type": "object",
+      "title": "UpdateWordsGuessedResponse",
+      "example": {
+        "ok": "Updated word guessed"
+      },
+      "description": "Returns JSON with the ok"
+    },
+    "UpdateWordsGuessedRequest": {
+      "type": "object",
+      "title": "UpdateWordsGuessed",
+      "example": {
+        "word": "APPLE"
+      },
+      "description": "Returns JSON with the report"
+    },
+    "UpdateWordsGuessedError": {
+      "type": "object",
+      "title": "UpdateWordsGuessedError",
+      "example": {
+        "error": "Failed updating guessed word"
+      },
+      "description": "Returns JSON with the error"
+    },
+    "GetWordReportResponseError": {
+      "type": "object",
+      "title": "GetWordsResponseError",
+      "example": {
+        "error": "There are no reports"
+      },
+      "description": "Response of error"
+    },
+    "GetWordReportResponse": {
+      "type": "object",
+      "title": "GetWordsResponse",
+      "example": {
+        "words_reports": [
+          {
+            "word": "APPLE",
+            "user": "juan@mail.com",
+            "played": 0,
+            "guessed": 0
+          },
+          {
+            "word": "LION",
+            "user": "juan@mail.com",
+            "played": 0,
+            "guessed": 0
+          }
+        ]
+      },
+      "description": "Response of words report"
+    },
+    "GetUserReportResponseError": {
+      "type": "object",
+      "title": "GetWordsResponseError",
+      "example": {
+        "error": "There are no reports"
+      },
+      "description": "Response of error"
+    },
+    "GetUserReportResponse": {
+      "type": "object",
+      "title": "GetWordsResponse",
+      "example": {
+        "user_report": [
+          {
+            "word": "APPLE",
+            "date": "2021-12-21T03:06:06",
+            "action": "INSERT"
+          },
+          {
+            "word": "LION",
+            "date": "2021-12-21T03:06:06",
+            "action": "INSERT"
+          }
+        ]
+      },
+      "description": "Response of users report"
+    }
+  }
+}
