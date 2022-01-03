@@ -8,7 +8,7 @@ defmodule HangmanWeb.WordsReportControllerTest do
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
-  
+
   describe "[ANY] Token its invalid" do
     test "Error when 'token' invalid" do
       conn = build_conn()
@@ -62,7 +62,7 @@ defmodule HangmanWeb.WordsReportControllerTest do
       response =
         conn
         |> put_req_header("authorization", Token.auth_sign(%{email: "juan@mail.com", user_id: 1}))
-        |> get(Routes.words_report_path(conn, :get_words_report, 0, 0))
+        |> get(Routes.words_report_path(conn, :get_words_report))
         |> json_response(:ok)
 
       assert %{

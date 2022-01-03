@@ -22,8 +22,10 @@ defmodule HangmanWeb.Router do
     options "/report/words/pdf", OptionsController, :options
 
     get "/report/users/:np/:nr", UsersReportController, :get_users_report
+    get "/report/users", UsersReportController, :get_users_report
     get "/report/users/pdf", UsersReportController, :create_users_report_pdf
     get "/report/words/:np/:nr", WordsReportController, :get_words_report
+    get "/report/words", WordsReportController, :get_words_report
     put "/report/words/guessed", WordsReportController, :update_words_guessed
     get "/report/words/pdf", WordsReportController, :create_words_report_pdf
   end
