@@ -47,6 +47,27 @@ defmodule HangmanWeb.UsersReportControllerTest do
         |> json_response(:ok)
 
       assert %{
+        "count" => _count,
+        "users_reports" => [%{
+          "word" => _word,
+          "action" => _difficulty,
+          "date" => _played,
+          "user" => _user
+        }]
+      } = response
+    end
+
+    test "Returns all users' reports matched" do
+      conn = build_conn()
+
+      response =
+        conn
+        |> put_req_header("authorization", Token.auth_sign(%{email: "juan@mail.com", user_id: 1}))
+        |> get(Routes.users_report_path(conn, :get_users_report, 1, 5, %{"char" => "a"}))
+        |> json_response(:ok)
+
+      assert %{
+        "count" => _count,
         "users_reports" => [%{
           "word" => _word,
           "action" => _difficulty,

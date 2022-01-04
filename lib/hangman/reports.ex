@@ -6,6 +6,26 @@ defmodule Hangman.Reports do
     WordReport
   }
 
+  def count_users_report(attrs \\ %{}) do
+    query = cond do
+      not is_nil(attrs["char"]) ->
+        from u in UserReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.email, ^"%#{String.trim(String.downcase(attrs["char"]))}%") or like(u.action, ^"%#{String.trim(String.upcase(attrs["char"]))}%"), select: count(u)
+      true ->
+        from u in UserReport, select: count(u)
+    end
+    Repo.one(query)
+  end
+
+  def count_words_report(attrs \\ %{}) do
+    query = cond do
+      not is_nil(attrs["char"]) ->
+        from u in WordReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.user, ^"%#{String.trim(String.downcase(attrs["char"]))}%"), select: count(u)
+      true ->
+        from u in WordReport, select: count(u)
+    end
+    Repo.one(query)
+  end
+
   def all_users_report() do
     Repo.all(UserReport)
   end
@@ -23,22 +43,6 @@ defmodule Hangman.Reports do
     end
     Repo.all(query)
   end
-
-  # def list_users_report() do
-  #   UserReport
-  #   |> Repo.all()
-  #   |> Enum.group_by(& &1.email)
-  #   |> Enum.map(fn {k,v} -> %{user: k, data: Enum.map(v, fn x -> %{action: x.action, word: x.word, date: x.inserted_at} end)} end)
-  # end
-
-  # def list_users_report(attrs \\ %{}) do
-  #   case not is_nil(attrs["email"]) do
-  #     true ->
-  #       query = from u in UserReport, where: u.email == ^attrs["email"], select: u
-  #       Repo.all(query)
-  #     false -> []
-  #   end
-  # end
 
   def create_users_report(attrs \\ %{}) do
     attrs
@@ -89,6 +93,8 @@ defmodule Hangman.Reports do
     cond do
       not is_nil(attrs["char"]) ->
         from u in UserReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.email, ^"%#{String.trim(String.downcase(attrs["char"]))}%") or like(u.action, ^"%#{String.trim(String.upcase(attrs["char"]))}%"), order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+      not is_nil(attrs["max_date"]) and not is_nil(attrs["min_date"])->
+        from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.inserted_at >= ^NaiveDateTime.from_iso8601!(attrs["min_date"]<>" 00:00:00") and u.inserted_at <= ^NaiveDateTime.from_iso8601!(attrs["max_date"]<>" 11:59:59"), select: u
       not is_nil(attrs["field"]) and not is_nil(attrs["order"]) ->
         get_field_users(attrs)
       true ->

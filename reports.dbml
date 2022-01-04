@@ -1,0 +1,26 @@
+Project Reports {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # Hangman Game Database
+    **Database for reports service**
+  '''
+}
+Table users_report {
+  id int [pk, increment]
+  email varchar
+  action varchar
+  word varchar
+  created_at varchar [note: 'When user_report created']
+  updated_at varchar [note: 'When user_report updated']
+  note: "table 'users_report' contains users_report information"
+}
+Table words_report {
+  id int [pk, increment]
+  word varchar [not null, unique]
+  user varchar
+  played int
+  guessed int
+  created_at varchar [note: 'When word_report created']
+  updated_at varchar [note: 'When word_report updated']
+  note: "table 'words_report' contains words_report information"
+}

@@ -18,6 +18,11 @@ defmodule Hangman.ReportTest do
       assert reports != []
     end
 
+    test "Returns all user reports by date" do
+      reports = Reports.list_users_report(%{"np" => "1","nr" =>"1", "min_date" => "2022-01-01", "max_date" => "2022-01-30"})
+      assert reports != []
+    end
+
     test "Returns user report that match" do
       reports = Reports.list_users_report(%{"np" => "1","nr" =>"1", "char" => "juan"})
       assert reports != []

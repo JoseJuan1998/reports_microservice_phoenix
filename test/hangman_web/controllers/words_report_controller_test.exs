@@ -47,6 +47,27 @@ defmodule HangmanWeb.WordsReportControllerTest do
         |> json_response(:ok)
 
       assert %{
+        "count" => _count,
+        "words_reports" => [%{
+          "word" => _word,
+          "guessed" => _difficulty,
+          "played" => _played,
+          "user" => _user
+        }]
+      } = response
+    end
+
+    test "Returns all words' reports matched" do
+      conn = build_conn()
+
+      response =
+        conn
+        |> put_req_header("authorization", Token.auth_sign(%{email: "juan@mail.com", user_id: 1}))
+        |> get(Routes.words_report_path(conn, :get_words_report, 1, 5, %{"char" => "a"}))
+        |> json_response(:ok)
+
+      assert %{
+        "count" => _count,
         "words_reports" => [%{
           "word" => _word,
           "guessed" => _difficulty,

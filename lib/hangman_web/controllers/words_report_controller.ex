@@ -4,7 +4,7 @@ defmodule HangmanWeb.WordsReportController do
   use HangmanWeb, :controller
   alias Hangman.Reports
   alias Hangman.PdfWordsReport
-  
+
   plug :authenticate_api_user when action in [:get_words_report, :update_words_guessed, :create_words_report_pdf]
 
   action_fallback HangmanWeb.ReportErrorController
@@ -32,6 +32,7 @@ defmodule HangmanWeb.WordsReportController do
           title("GetWordsResponse")
           description("Response of words report")
           example(%{
+            count: 2,
             words_reports: [
               %{
                 word: "APPLE",
@@ -110,9 +111,10 @@ defmodule HangmanWeb.WordsReportController do
 
     case reports != [] do
       true ->
+        count = Reports.count_words_report(params)
         conn
         |> put_status(200)
-        |> render("reports.json", %{reports: reports})
+        |> render("reports.json", %{count: count, reports: reports})
       false ->
         conn
         |> put_status(200)
@@ -149,7 +151,7 @@ defmodule HangmanWeb.WordsReportController do
         |> json(%{error: "Failed updating guessed word"})
     end
   end
-  
+
   # coveralls-ignore-start
   swagger_path :create_words_report_pdf do
     get("/manager/report/words/pdf")

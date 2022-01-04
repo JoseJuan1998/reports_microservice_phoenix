@@ -4,7 +4,7 @@ defmodule HangmanWeb.UsersReportController do
   use HangmanWeb, :controller
   alias Hangman.Reports
   alias Hangman.PdfUsersReport
-  
+
   plug :authenticate_api_user when action in [:get_users_report, :create_users_report_pdf]
 
   # coveralls-ignore-start
@@ -29,6 +29,7 @@ defmodule HangmanWeb.UsersReportController do
           title("GetWordsResponse")
           description("Response of users report")
           example(%{
+            count: 2,
             user_report: [
               %{
                 word: "APPLE",
@@ -55,7 +56,7 @@ defmodule HangmanWeb.UsersReportController do
   end
 
   swagger_path :get_users_report do
-    get("/manager/report/users/:np/:nr?char={char}&field={field}&order={order}")
+    get("/manager/report/users/:np/:nr?char={char}&field={field}&order={order}&min_date={min_date}&max_date={max_date}")
     summary("Users' report")
     description("Returns JSON with the report")
     parameters do
@@ -65,6 +66,8 @@ defmodule HangmanWeb.UsersReportController do
       char :path, :string, "Report to match", required: false
       field :path, :string, "Field to order", required: false
       order :path, :string, "Order", required: false
+      min_date :path, :string, "Min date to search", required: false
+      max_date :path, :string, "Max date to search", required: false
     end
     response(200, "Success", Schema.ref(:GetUserReportResponse))
     response(204, "No reports" ,Schema.ref(:GetUserReportResponseError))
@@ -76,9 +79,10 @@ defmodule HangmanWeb.UsersReportController do
     reports = Reports.list_users_report(params)
     case reports != [] do
       true ->
+        count = Reports.count_users_report(params)
         conn
         |> put_status(200)
-        |> render("reports.json", %{reports: reports})
+        |> render("reports.json", %{count: count, reports: reports})
       false ->
         conn
         |> put_status(200)
