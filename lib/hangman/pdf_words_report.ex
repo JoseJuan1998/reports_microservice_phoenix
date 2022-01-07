@@ -4,8 +4,9 @@ defmodule Hangman.PdfWordsReport do
   @foreground "#3c3c3c"
 
   def generate_pdf(items) do
-    date = DateTime.utc_now()
-    date_string = "#{date.year}/#{date.month}/#{date.day}"
+    date = NaiveDateTime.local_now()
+    date_header = "Fecha: #{date.year}/#{date.month}/#{date.day}"
+    time_header = "Hora: #{date.hour}:#{date.minute}:#{date.second}"
     html =
       Sneeze.render([
         :html,
@@ -19,12 +20,12 @@ defmodule Hangman.PdfWordsReport do
                 "color" => @foreground
               })
           },
-          render_header(date_string),
+          render_header(date_header, time_header, Enum.count(items)),
           render_list(items)
         ]
       ])
 
-      PdfGenerator.generate_binary(html, page_size: "Letter", shell_params: ["--dpi", "300"])
+      PdfGenerator.generate_binary(html, page_size: "Letter", shell_params: ["--dpi", "300", "--footer-right", "Página [page] de [topage]", "--margin-bottom", "15mm", "--footer-spacing", "2", "--footer-font-size", "10"])
   end
 
   defp style(style_map) do
@@ -35,7 +36,7 @@ defmodule Hangman.PdfWordsReport do
     |> Enum.join(";")
   end
 
-  defp render_header(date_string) do
+  defp render_header(date, time, count) do
     [
       :div,
       %{
@@ -66,7 +67,8 @@ defmodule Hangman.PdfWordsReport do
                 "font-size" => "35px",
                 "color" => @red,
                 "margin-top" => "0px",
-                "padding-top" => "0px"
+                "padding-top" => "0px",
+                "margin-left" => "-16px"
               })
           },
           "Palabras"
@@ -77,10 +79,36 @@ defmodule Hangman.PdfWordsReport do
             style:
               style(%{
                 "font-size" => "20px",
-                "margin-top" => "-20px"
+                "margin-top" => "-20px",
+                "margin-left" => "-16px"
               })
           },
-          date_string
+          date
+        ],
+        [
+          :h3,
+          %{
+            style:
+              style(%{
+                "font-size" => "20px",
+                "margin-top" => "-15px",
+                "margin-bottom" => "20px",
+                "margin-left" => "-16px"
+              })
+          },
+          time
+        ],
+        [
+          :h3,
+          %{
+            style:
+              style(%{
+                "font-size" => "16px",
+                "margin-bottom" => "-15px",
+                "margin-left" => "-16px"
+              })
+          },
+          "Total de Registros: #{count}"
         ]
       ]
     ]
