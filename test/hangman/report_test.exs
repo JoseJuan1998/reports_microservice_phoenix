@@ -67,6 +67,11 @@ defmodule Hangman.ReportTest do
       reports = Reports.list_users_report()
       assert reports == []
     end
+
+    test "Error when user reports is empty by wrong date" do
+      reports = Reports.list_users_report(%{"np" => "1","nr" =>"1", "min_date" => "ASDF", "max_date" => "ASDF"})
+      assert reports == []
+    end
   end
 
   describe "[Unit] create_users_report():" do
@@ -118,6 +123,16 @@ defmodule Hangman.ReportTest do
 
     test "Error when word reports is empty" do
       reports = Reports.list_words_report()
+      assert reports == []
+    end
+
+    test "Error when word reports is empty by wrong type not integer played" do
+      reports = Reports.list_words_report(%{"np" => "1","nr" =>"1", "min_played" => "1", "max_played" => "1"})
+      assert reports == []
+    end
+
+    test "Error when word reports is empty by wrong type not integer guessed" do
+      reports = Reports.list_words_report(%{"np" => "1","nr" =>"1", "min_guessed" => "1", "max_guessed" => "1"})
       assert reports == []
     end
 
