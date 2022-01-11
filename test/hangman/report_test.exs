@@ -122,12 +122,12 @@ defmodule Hangman.ReportTest do
     end
 
     test "Returns a range of played words" do
-      reports = Reports.list_words_report(%{"np" => "1","nr" =>"1","min_played" => "0", "max_played" => "1"})
+      reports = Reports.list_words_report(%{"np" => "1","nr" =>"1","min_played" => 0, "max_played" => 1})
       assert reports != []
     end
 
     test "Returns a range of guessed words" do
-      reports = Reports.list_words_report(%{"np" => "1","nr" =>"1","min_guessed" => "0", "max_guessed" => "1"})
+      reports = Reports.list_words_report(%{"np" => "1","nr" =>"1","min_guessed" => 0, "max_guessed" => 1})
       assert reports != []
     end
   end

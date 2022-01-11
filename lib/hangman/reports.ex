@@ -60,7 +60,7 @@ defmodule Hangman.Reports do
       not is_nil(attrs["np"]) and not is_nil(attrs["nr"]) ->
         attrs |> get_pagination_words()
       true ->
-        from u in UserReport, offset: 0, limit: 0, select: u
+        from u in WordReport, offset: 0, limit: 0, select: u
     end
     Repo.all(query)
   end
@@ -94,11 +94,20 @@ defmodule Hangman.Reports do
       not is_nil(attrs["char"]) ->
         from u in UserReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.email, ^"%#{String.trim(String.downcase(attrs["char"]))}%") or like(u.action, ^"%#{String.trim(String.upcase(attrs["char"]))}%"), order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
       not is_nil(attrs["max_date"]) and not is_nil(attrs["min_date"])->
-        from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.inserted_at >= ^NaiveDateTime.from_iso8601!(attrs["min_date"]<>" 00:00:00") and u.inserted_at <= ^NaiveDateTime.from_iso8601!(attrs["max_date"]<>" 11:59:59"), select: u
+        get_date(attrs)
       not is_nil(attrs["field"]) and not is_nil(attrs["order"]) ->
         get_field_users(attrs)
       true ->
         from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+    end
+  end
+
+  defp get_date(attrs) do
+    case NaiveDateTime.from_iso8601(attrs["min_date"]<>" 00:00:00") != {:error, :invalid_format} and NaiveDateTime.from_iso8601(attrs["max_date"]<>" 00:00:00") != {:error, :invalid_format} do
+      false ->
+        from u in UserReport, offset: 0, limit: 0, select: u
+      true ->
+        from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.inserted_at >= ^NaiveDateTime.from_iso8601!(attrs["min_date"]<>" 00:00:00") and u.inserted_at <= ^NaiveDateTime.from_iso8601!(attrs["max_date"]<>" 11:59:59"), select: u
     end
   end
 
@@ -133,11 +142,29 @@ defmodule Hangman.Reports do
       not is_nil(attrs["field"]) and not is_nil(attrs["order"]) ->
         get_field_words(attrs)
       not is_nil(attrs["max_played"]) and not is_nil(attrs["min_played"])->
-        from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.played >= ^attrs["min_played"] and u.played <= ^attrs["max_played"], select: u
+        integer_played(attrs)
       not is_nil(attrs["min_guessed"]) and not is_nil(attrs["max_guessed"]) ->
-        from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.guessed >= ^attrs["min_guessed"] and u.guessed <= ^attrs["max_guessed"], select: u
+        integer_guessed(attrs)
       true ->
         from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+    end
+  end
+
+  defp integer_played(attrs) do
+    cond do
+      is_integer(attrs["min_played"]) and is_integer(attrs["max_played"]) ->
+        from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.played >= ^abs(attrs["min_played"]) and u.played <= ^abs(attrs["max_played"]), select: u
+      true ->
+        from u in WordReport, offset: 0, limit: 0, select: u
+    end
+  end
+
+  defp integer_guessed(attrs) do
+    cond do
+      is_integer(attrs["min_guessed"]) and is_integer(attrs["max_guessed"]) ->
+        from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.guessed >= ^abs(attrs["min_guessed"]) and u.guessed <= ^abs(attrs["max_guessed"]), select: u
+      true ->
+        from u in WordReport, offset: 0, limit: 0, select: u
     end
   end
 
