@@ -9,7 +9,7 @@ defmodule Hangman.Reports do
   def count_users_report(attrs \\ %{}) do
     query = cond do
       not is_nil(attrs["char"]) ->
-        from u in UserReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.email, ^"%#{String.trim(String.downcase(attrs["char"]))}%") or like(u.action, ^"%#{String.trim(String.upcase(attrs["char"]))}%"), select: count(u)
+        from u in search_users_report(attrs), select: count(u)
       true ->
         from u in UserReport, select: count(u)
     end
@@ -19,7 +19,7 @@ defmodule Hangman.Reports do
   def count_words_report(attrs \\ %{}) do
     query = cond do
       not is_nil(attrs["char"]) ->
-        from u in WordReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.user, ^"%#{String.trim(String.downcase(attrs["char"]))}%"), select: count(u)
+        from u in search_words_report(attrs), select: count(u)
       true ->
         from u in WordReport, select: count(u)
     end
@@ -49,11 +49,6 @@ defmodule Hangman.Reports do
     |> UserReport.create_changeset()
     |> Repo.insert()
   end
-
-  # def list_words_report() do
-  #   WordReport
-  #   |> Repo.all()
-  # end
 
   def list_words_report(attrs \\ %{}) do
     query = cond do
@@ -92,13 +87,13 @@ defmodule Hangman.Reports do
   defp get_pagination_users(attrs) do
     cond do
       not is_nil(attrs["char"]) ->
-        from u in UserReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.email, ^"%#{String.trim(String.downcase(attrs["char"]))}%") or like(u.action, ^"%#{String.trim(String.upcase(attrs["char"]))}%"), order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        from u in search_users_report(attrs), offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
       not is_nil(attrs["max_date"]) and not is_nil(attrs["min_date"])->
         get_date(attrs)
       not is_nil(attrs["field"]) and not is_nil(attrs["order"]) ->
         get_field_users(attrs)
       true ->
-        from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        from u in paginate_users_report(attrs), select: u
     end
   end
 
@@ -107,7 +102,7 @@ defmodule Hangman.Reports do
       false ->
         from u in UserReport, offset: 0, limit: 0, select: u
       true ->
-        from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.inserted_at >= ^NaiveDateTime.from_iso8601!(attrs["min_date"]<>" 00:00:00") and u.inserted_at <= ^NaiveDateTime.from_iso8601!(attrs["max_date"]<>" 11:59:59"), select: u
+        from u in paginate_users_report(attrs), where: u.inserted_at >= ^NaiveDateTime.from_iso8601!(attrs["min_date"]<>" 00:00:00") and u.inserted_at <= ^NaiveDateTime.from_iso8601!(attrs["max_date"]<>" 11:59:59"), select: u
     end
   end
 
@@ -120,25 +115,25 @@ defmodule Hangman.Reports do
       :action ->
         get_sorting_users(attrs)
       _other ->
-        from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        from u in paginate_users_report(attrs), select: u
     end
   end
 
   defp get_sorting_users(attrs) do
     case String.to_atom(String.upcase(attrs["order"])) do
       :ASC ->
-        from u in UserReport, order_by: ^[asc: String.to_atom(String.downcase(attrs["field"]))], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        sort_users_report(:asc, attrs)
       :DESC ->
-        from u in UserReport, order_by: ^[desc: String.to_atom(String.downcase(attrs["field"]))],offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        sort_users_report(:desc, attrs)
       _other ->
-        from u in UserReport, order_by: [asc: u.word], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        from u in paginate_users_report(attrs), select: u
     end
   end
 
   defp get_pagination_words(attrs) do
     cond do
       not is_nil(attrs["char"]) ->
-        from u in WordReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.user, ^"%#{String.trim(String.downcase(attrs["char"]))}%"), order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        from u in search_words_report(attrs), offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
       not is_nil(attrs["field"]) and not is_nil(attrs["order"]) ->
         get_field_words(attrs)
       not is_nil(attrs["max_played"]) and not is_nil(attrs["min_played"])->
@@ -146,7 +141,7 @@ defmodule Hangman.Reports do
       not is_nil(attrs["min_guessed"]) and not is_nil(attrs["max_guessed"]) ->
         integer_guessed(attrs)
       true ->
-        from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        paginate_words_report(attrs)
     end
   end
 
@@ -168,51 +163,6 @@ defmodule Hangman.Reports do
     end
   end
 
-  # defp get_min(attrs) do
-  #   min = min(attrs)
-  #   case String.to_atom(String.downcase(attrs["min"])) do
-  #     :played ->
-  #       from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.played == ^min, select: u
-  #     :guessed ->
-  #       from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.guessed == ^min, select: u
-  #     true ->
-  #       from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
-  #   end
-  # end
-
-  # defp min(attrs) do
-  #   case String.to_atom(String.downcase(attrs["min"])) do
-  #     :played ->
-  #       Repo.one(from u in WordReport, select: min(u.played))
-  #     :guessed ->
-  #       Repo.one(from u in WordReport, select: min(u.guessed))
-  #     true -> 0
-  #   end
-  # end
-
-  # defp get_max(attrs) do
-  #   max = max(attrs)
-  #   IO.puts("max")
-  #   case String.to_atom(String.downcase(attrs["max"])) do
-  #     :played ->
-  #       from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.played == ^max, select: u
-  #     :guessed ->
-  #       from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], where: u.guessed == ^max, select: u
-  #     true ->
-  #       from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
-  #   end
-  # end
-
-  # defp max(attrs) do
-  #   case String.to_atom(String.downcase(attrs["max"])) do
-  #     :played ->
-  #       Repo.one(from u in WordReport, select: max(u.played))
-  #     :guessed ->
-  #       Repo.one(from u in WordReport, select: max(u.guessed))
-  #     true -> 0
-  #   end
-  # end
-
   defp get_field_words(attrs) do
     case String.to_atom(String.downcase(attrs["field"])) do
       :word ->
@@ -220,18 +170,42 @@ defmodule Hangman.Reports do
       :user ->
         get_sorting_words(attrs)
       _other ->
-        from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        paginate_words_report(attrs)
     end
   end
 
   defp get_sorting_words(attrs) do
     case String.to_atom(String.upcase(attrs["order"])) do
       :ASC ->
-        from u in WordReport, order_by: ^[asc: String.to_atom(String.downcase(attrs["field"]))], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        sort_words_report(:asc, attrs)
       :DESC ->
-        from u in WordReport, order_by: ^[desc: String.to_atom(String.downcase(attrs["field"]))],offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        sort_words_report(:desc, attrs)
       _other ->
-        from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+        paginate_words_report(attrs)
     end
+  end
+
+  defp search_users_report(attrs) do
+    from u in UserReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.email, ^"%#{String.trim(String.downcase(attrs["char"]))}%") or like(u.action, ^"%#{String.trim(String.upcase(attrs["char"]))}%")
+  end
+
+  defp sort_users_report(order, attrs) do
+    from u in UserReport, order_by: ^Keyword.new([{order, String.to_atom(String.downcase(attrs["field"]))}]), offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+  end
+
+  defp paginate_users_report(attrs) do
+    from u in UserReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"]
+  end
+
+  defp search_words_report(attrs) do
+    from u in WordReport, where: like(u.word, ^"%#{String.trim(String.upcase(attrs["char"]))}%") or like(u.user, ^"%#{String.trim(String.downcase(attrs["char"]))}%")
+  end
+
+  defp sort_words_report(order, attrs) do
+    from u in WordReport, order_by: ^Keyword.new([{order, String.to_atom(String.downcase(attrs["field"]))}]), offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
+  end
+
+  defp paginate_words_report(attrs) do
+    from u in WordReport, order_by: [asc: u.inserted_at], offset: ^((String.to_integer(attrs["np"]) - 1) * (String.to_integer(attrs["nr"]))), limit: ^attrs["nr"], select: u
   end
 end

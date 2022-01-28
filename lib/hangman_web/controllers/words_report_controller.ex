@@ -5,8 +5,6 @@ defmodule HangmanWeb.WordsReportController do
   alias Hangman.Reports
   alias Hangman.PdfWordsReport
 
-  plug :authenticate_api_user when action in [:get_words_report, :create_words_report_pdf]
-
   action_fallback HangmanWeb.ReportErrorController
 
   # coveralls-ignore-start

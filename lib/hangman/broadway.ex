@@ -15,10 +15,10 @@ defmodule Hangman.Broadway do
               BroadwayRabbitMQ.Producer,
                   queue: "log",
                   connection: [
-                    host: "20.127.108.224",
+                    host: System.get_env("RABBIT_IP"),
                     port: 5672,
-                    username: "prueba",
-                    password: "prueba"
+                    username: System.get_env("RABBIT_USER"),
+                    password: System.get_env("RABBIT_PASS")
                   ],
                   on_failure: :reject, # reject_and_requeue,
                   qos: [prefetch_count: 50]

@@ -1,7 +1,7 @@
 defmodule HangmanWeb.UsersReportControllerTest do
   use HangmanWeb.ConnCase
   alias Hangman.Reports
-  alias Hangman.Token
+  alias HangmanWeb.Auth.Guardian
 
   setup_all do: []
 
@@ -22,10 +22,10 @@ defmodule HangmanWeb.UsersReportControllerTest do
   describe "GET /manager/report/users/pdf" do
     test "Create PDF" do
       conn = build_conn()
-
+      {:ok, token, _} = Guardian.test_token_auth(%{name: "Juan", id: 1, lastname: "Rincon", email: "juan@mail.com"})
       response =
         conn
-        |> put_req_header("authorization", Token.auth_sign(%{email: "juan@mail.com", user_id: 1}))
+        |> put_req_header("authorization", "Bearer "<>token)
         |> get(Routes.users_report_path(conn, :create_users_report_pdf))
         |> response(:ok)
     end
@@ -39,10 +39,10 @@ defmodule HangmanWeb.UsersReportControllerTest do
 
     test "Returns all users' reports" do
       conn = build_conn()
-
+      {:ok, token, _} = Guardian.test_token_auth(%{name: "Juan", id: 1, lastname: "Rincon", email: "juan@mail.com"})
       response =
         conn
-        |> put_req_header("authorization", Token.auth_sign(%{email: "juan@mail.com", user_id: 1}))
+        |> put_req_header("authorization", "Bearer "<>token)
         |> get(Routes.users_report_path(conn, :get_users_report, 1, 5))
         |> json_response(:ok)
 
@@ -59,10 +59,10 @@ defmodule HangmanWeb.UsersReportControllerTest do
 
     test "Returns all users' reports matched" do
       conn = build_conn()
-
+      {:ok, token, _} = Guardian.test_token_auth(%{name: "Juan", id: 1, lastname: "Rincon", email: "juan@mail.com"})
       response =
         conn
-        |> put_req_header("authorization", Token.auth_sign(%{email: "juan@mail.com", user_id: 1}))
+        |> put_req_header("authorization", "Bearer "<>token)
         |> get(Routes.users_report_path(conn, :get_users_report, 1, 5, %{"char" => "a"}))
         |> json_response(:ok)
 
@@ -79,10 +79,10 @@ defmodule HangmanWeb.UsersReportControllerTest do
 
     test "Returns no users" do
       conn = build_conn()
-
+      {:ok, token, _} = Guardian.test_token_auth(%{name: "Juan", id: 1, lastname: "Rincon", email: "juan@mail.com"})
       response =
         conn
-        |> put_req_header("authorization", Token.auth_sign(%{email: "juan@mail.com", user_id: 1}))
+        |> put_req_header("authorization", "Bearer "<>token)
         |> get(Routes.users_report_path(conn, :get_users_report))
         |> json_response(:ok)
 

@@ -55,7 +55,8 @@ defmodule Hangman.MixProject do
       {:broadway, "~> 1.0"},
       {:broadway_rabbitmq, "~> 0.7.1"},
       {:pdf_generator, ">=0.4.0"},
-      {:sneeze, "~> 1.1"}
+      {:sneeze, "~> 1.1"},
+      {:guardian, "~> 2.2"}
     ]
   end
 

@@ -5,8 +5,6 @@ defmodule HangmanWeb.UsersReportController do
   alias Hangman.Reports
   alias Hangman.PdfUsersReport
 
-  plug :authenticate_api_user when action in [:get_users_report, :create_users_report_pdf]
-
   # coveralls-ignore-start
   def swagger_definitions do
     %{
