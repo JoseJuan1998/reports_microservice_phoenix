@@ -54,7 +54,7 @@ defmodule Hangman.MixProject do
       {:amqp, "~> 3.0"},
       {:broadway, "~> 1.0"},
       {:broadway_rabbitmq, "~> 0.7.1"},
-      {:pdf_generator, ">=0.4.0"},
+      # {:pdf_generator, ">=0.4.0"},
       {:sneeze, "~> 1.1"},
       {:guardian, "~> 2.2"}
     ]

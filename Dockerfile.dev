@@ -1,0 +1,28 @@
+FROM bitwalker/alpine-elixir-phoenix:latest
+
+# Phoenix
+
+WORKDIR /app
+
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+# Cache elixir deps
+ADD mix.exs mix.lock ./
+RUN mix do deps.get, deps.compile
+
+ADD . .
+
+COPY docker_dev_start.sh docker_dev_start.sh
+
+# Set exposed ports
+EXPOSE 4000
+
+# Environment variables 
+ENV PORT=4000
+ENV RABBIT_USER=prueba
+ENV RABBIT_PASS=prueba
+ENV RABBIT_IP=20.127.108.224
+ENV RABBIT_URL=amqp://prueba:prueba@20.127.108.224
+ENV GUARDIAN_KEY=BlYEM0KuywI2iJAT045kADqrkrQao+m8adwiAsw0aR3OFeDvVmTPjkb8B+3Jav0q
+ENV MIX_ENV=dev

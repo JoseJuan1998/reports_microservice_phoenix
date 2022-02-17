@@ -4,8 +4,8 @@ import Config
 config :hangman, Hangman.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
-  database: "reports_dev",
+  hostname: "reports",
+  database: "reports_guardian_dev",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -18,7 +18,7 @@ config :hangman, Hangman.Repo,
 config :hangman, HangmanWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4002],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
