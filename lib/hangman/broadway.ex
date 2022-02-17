@@ -16,7 +16,7 @@ defmodule Hangman.Broadway do
                   queue: "log",
                   connection: [
                     host: System.get_env("RABBIT_IP"),
-                    port: 5672,
+                    port: 5673,
                     username: System.get_env("RABBIT_USER"),
                     password: System.get_env("RABBIT_PASS")
                   ],

@@ -19,10 +19,9 @@ COPY docker_dev_start.sh docker_dev_start.sh
 EXPOSE 4000
 
 # Environment variables 
-ENV PORT=4000
-ENV RABBIT_USER=prueba
-ENV RABBIT_PASS=prueba
-ENV RABBIT_IP=20.127.108.224
-ENV RABBIT_URL=amqp://prueba:prueba@20.127.108.224
+ENV RABBIT_USER=guest
+ENV RABBIT_PASS=guest
+ENV RABBIT_IP=192.168.1.194
+ENV RABBIT_URL=amqp://guest:guest@192.168.1.194
 ENV GUARDIAN_KEY=BlYEM0KuywI2iJAT045kADqrkrQao+m8adwiAsw0aR3OFeDvVmTPjkb8B+3Jav0q
 ENV MIX_ENV=dev
